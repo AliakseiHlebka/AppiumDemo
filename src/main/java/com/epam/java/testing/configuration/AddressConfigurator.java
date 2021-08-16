@@ -20,23 +20,29 @@ public class AddressConfigurator {
     }
 
     public static AppiumDriverLocalService getAppiumDriverLocalService(int port) {
-        if (appiumDriverLocalService == null) startService(port);
+        if (appiumDriverLocalService == null) {
+            startService(port);
+        }
         return appiumDriverLocalService;
     }
 
-    public static void startService(int port) {
-        appiumDriverLocalService = new AppiumServiceBuilder()
-            .withIPAddress(ConfigurationReader.get().appiumAddress())
-            .usingPort(port)
-            .withArgument(SESSION_OVERRIDE)
-            .withArgument(LOG_LEVEL, ERROR_MESSAGE)
-            .build();
-        appiumDriverLocalService.start();
+    private static void startService(int port) {
+        if (appiumDriverLocalService == null) {
+            appiumDriverLocalService = new AppiumServiceBuilder()
+                .withIPAddress(ConfigurationReader.get().appiumAddress())
+                .usingPort(port)
+                .withArgument(SESSION_OVERRIDE)
+                .withArgument(LOG_LEVEL, ERROR_MESSAGE)
+                .build();
+            appiumDriverLocalService.start();
+        }
         LOG.info("Appium server started on port {}", port);
     }
 
     public static void stopService() {
-        appiumDriverLocalService.stop();
+        if (appiumDriverLocalService != null) {
+            appiumDriverLocalService.stop();
+        }
         LOG.info("Appium server stopped");
     }
 }
